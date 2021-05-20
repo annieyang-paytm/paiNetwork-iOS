@@ -1,0 +1,4 @@
+framework module PaiNetwork {
+  header "PaiNetwork-Swift.h"
+  requires objc
+}

@@ -1,0 +1,252 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.3 (swiftlang-1200.0.29.2 clang-1200.0.30.1)
+// swift-module-flags: -target armv7-apple-ios10.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name PaiNetwork
+import CommonCrypto
+import Compression
+import Dispatch
+import Foundation
+import Swift
+import SystemConfiguration
+import UIKit
+public enum RetryConstraint {
+  case retry(delay: Foundation.TimeInterval)
+  case cancel
+  case exponential(initial: Foundation.TimeInterval)
+}
+open class PNKCrashlyticsTrackingError : PaiNetwork.PNKJobError {
+  final public let apiEndPoint: Swift.String?
+  final public let fileInfo: Swift.String
+  public init(errorCode: Swift.Int, errorMessage: Swift.String, requestEndPoint: Swift.String? = nil, isRetry: Swift.Bool = false, file: Swift.String = #file, function: Swift.String = #function, line: Swift.Int = #line)
+  override public var description: Swift.String {
+    get
+  }
+  @objc deinit
+  override public init(code: Swift.Int, isRetry: Swift.Bool = super, message: Swift.String)
+}
+public protocol PNKJobDelegate : AnyObject {
+  func sendErrorToCrashlytics(_ error: PaiNetwork.PNKCrashlyticsTrackingError)
+}
+extension PNKJobDelegate {
+  public func sendErrorToCrashlytics(_ error: PaiNetwork.PNKCrashlyticsTrackingError)
+}
+open class PNKBaseJob : PaiNetwork.Job {
+  public var requestEndPoint: Swift.String?
+  public init(endPoint: Swift.String? = nil)
+  open func onRun(callback: PaiNetwork.JobResult)
+  open func onRetry(error: Swift.Error) -> PaiNetwork.RetryConstraint
+  open func onRemove(result: PaiNetwork.JobCompletion)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers final public class PNKEmptyJob : PaiNetwork.PNKBaseJob {
+  override final public func onRun(callback: PaiNetwork.JobResult)
+  @objc deinit
+  override public init(endPoint: Swift.String? = super)
+}
+public enum PNKError : Swift.Error {
+  public enum NetworkError : Swift.Error {
+    case invalidURL(urlString: Swift.String)
+    case noHTTPResponse
+    case noResponseData
+    case unsuccessfulStatusCode(statusCode: Swift.Int)
+  }
+  public enum SessionTaskError : Swift.Error {
+    case sessionInvalidated
+    public static func == (a: PaiNetwork.PNKError.SessionTaskError, b: PaiNetwork.PNKError.SessionTaskError) -> Swift.Bool
+    public var hashValue: Swift.Int {
+      get
+    }
+    public func hash(into hasher: inout Swift.Hasher)
+  }
+  public enum EncodingError : Swift.Error {
+    case encodeHTTPBodyFailed(error: Swift.Error)
+  }
+  public enum DownloadingError : Swift.Error {
+    case moveFileFailed
+    public static func == (a: PaiNetwork.PNKError.DownloadingError, b: PaiNetwork.PNKError.DownloadingError) -> Swift.Bool
+    public var hashValue: Swift.Int {
+      get
+    }
+    public func hash(into hasher: inout Swift.Hasher)
+  }
+}
+open class PNKJobCreator {
+  public init()
+  open func create(type: Swift.String, params: [Swift.String : Any]?) -> PaiNetwork.Job
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class PNKDownloadRequest : PaiNetwork.PNKRequest {
+  @objc deinit
+  override public init(url: Swift.String, requestContent: PaiNetwork.PNKRequest.RequestContent = super, requestMethod: PaiNetwork.PNKRequestMethod = super, httpHeaders: [Swift.String : Swift.String] = super, isCookieRequired: Swift.Bool = super, includeURLRequestInResponse: Swift.Bool = super, requestModifier: PaiNetwork.PNKRequest.RequestModifier? = super)
+}
+@_hasMissingDesignatedInitializers final public class PNKJobManager {
+  public static let shared: PaiNetwork.PNKJobManager
+  final public func setupJobQueue(_ creator: PaiNetwork.PNKJobCreator, delegate: PaiNetwork.PNKJobDelegate?)
+  final public func createJob(type: Swift.String, params: [Swift.String : Any], constraint: PaiNetwork.PNKJobConstraints)
+  @objc deinit
+}
+public struct PNKJobConstraints : Swift.CustomStringConvertible, Swift.CustomDebugStringConvertible {
+  public var checkJobExistence: Swift.Bool
+  public var isSingleInstance: Swift.Bool
+  public var overrideSingleInstance: Swift.Bool
+  public var requirePersistent: Swift.Bool
+  public var requireLeastInternet: PaiNetwork.NetworkType
+  public var jobStartDelay: Swift.Double
+  public var retryMaxTimes: Swift.Double
+  public var requestTimeOut: Swift.Double
+  public init()
+  public init(checkJobExistence: Swift.Bool = false, isSingleInstance: Swift.Bool = true, overrideSingleInstance: Swift.Bool = true, requireLeastInternet: PaiNetwork.NetworkType = .cellular, requirePersistent: Swift.Bool = false, jobStartDelay: Foundation.TimeInterval = 0.0, maxRetry: Swift.Double = 3.0, requestTimeOut: Foundation.TimeInterval = 30.0)
+  public var description: Swift.String {
+    get
+  }
+  public var debugDescription: Swift.String {
+    get
+  }
+}
+open class PNKJobError : Swift.Error, Swift.CustomStringConvertible {
+  final public let code: Swift.Int
+  public var isRetry: Swift.Bool
+  final public let message: Swift.String
+  public init(code: Swift.Int, isRetry: Swift.Bool = false, message: Swift.String)
+  public var description: Swift.String {
+    get
+  }
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers public class PNKNetworkManager {
+  public static let shared: PaiNetwork.PNKNetworkManager
+  public func setupHMAC(xRequest: Swift.String, secretKey: Swift.String)
+  public func makeRequest(url: Foundation.URL, requestContent: Any? = nil, requestContentType: PaiNetwork.PNKRequestContentType = .none, shouldGzipRequestContent: Swift.Bool = false, requestMethod: PaiNetwork.PNKRequestMethod = .post, httpHeaders: [Swift.String : Swift.String] = [:], isCookieRequired: Swift.Bool = false, includeURLRequestInResponse: Swift.Bool = false, requestModifier: PaiNetwork.PNKRequest.RequestModifier? = nil, completion: @escaping (PaiNetwork.PNKResponse<Foundation.Data>) -> Swift.Void)
+  public func makeRequest(url: Swift.String, requestContent: Any? = nil, requestContentType: PaiNetwork.PNKRequestContentType = .none, shouldGzipRequestContent: Swift.Bool = false, requestMethod: PaiNetwork.PNKRequestMethod = .post, httpHeaders: [Swift.String : Swift.String] = [:], isCookieRequired: Swift.Bool = false, includeURLRequestInResponse: Swift.Bool = false, requestModifier: PaiNetwork.PNKRequest.RequestModifier? = nil, completion: @escaping (PaiNetwork.PNKResponse<Foundation.Data>) -> Swift.Void)
+  public func makeRequest(with request: PaiNetwork.PNKRequest, completion: @escaping (PaiNetwork.PNKResponse<Foundation.Data>) -> Swift.Void)
+  @discardableResult
+  public func download(url: Swift.String, requestContent: Any? = nil, requestContentType: PaiNetwork.PNKRequestContentType = .none, shouldGzipRequestContent: Swift.Bool = false, requestMethod: PaiNetwork.PNKRequestMethod = .get, httpHeaders: [Swift.String : Swift.String] = [:], timeout: Foundation.TimeInterval = URLSessionConfiguration.default.timeoutIntervalForResource, to destinationURL: Foundation.URL? = nil, isCookieRequired: Swift.Bool = false, includeURLRequestInResponse: Swift.Bool = false, requestModifier: PaiNetwork.PNKRequest.RequestModifier? = nil, completion: @escaping (PaiNetwork.PNKResponse<Foundation.URL>) -> Swift.Void) throws -> PaiNetwork.PNKDownloadRequest
+  @objc deinit
+}
+open class PNKRequest : Swift.CustomStringConvertible, Swift.CustomDebugStringConvertible {
+  public var url: Swift.String {
+    get
+  }
+  final public let requestMethod: PaiNetwork.PNKRequestMethod
+  final public let requestContent: PaiNetwork.PNKRequest.RequestContent
+  final public let httpHeaders: [Swift.String : Swift.String]
+  public typealias RequestModifier = (inout Foundation.URLRequest) -> Swift.Void
+  public init(url: Swift.String, requestContent: PaiNetwork.PNKRequest.RequestContent = .none, requestMethod: PaiNetwork.PNKRequestMethod = .post, httpHeaders: [Swift.String : Swift.String] = [:], isCookieRequired: Swift.Bool = false, includeURLRequestInResponse: Swift.Bool = false, requestModifier: PaiNetwork.PNKRequest.RequestModifier? = nil)
+  convenience public init(url: Foundation.URL, requestContent: PaiNetwork.PNKRequest.RequestContent = .none, requestMethod: PaiNetwork.PNKRequestMethod = .post, httpHeaders: [Swift.String : Swift.String] = [:], isCookieRequired: Swift.Bool = false, includeURLRequestInResponse: Swift.Bool = false, requestModifier: PaiNetwork.PNKRequest.RequestModifier? = nil)
+  open var description: Swift.String {
+    get
+  }
+  open var debugDescription: Swift.String {
+    get
+  }
+  @objc deinit
+}
+extension PNKRequest {
+  public struct RequestContent : Swift.CustomStringConvertible, Swift.CustomDebugStringConvertible {
+    public static let none: PaiNetwork.PNKRequest.RequestContent
+    public init(content: Any?, contentType: PaiNetwork.PNKRequestContentType = .json, shouldGzipContent: Swift.Bool = true)
+    public var bodyData: Foundation.Data? {
+      get
+    }
+    public var urlParameters: [Swift.String : Any]? {
+      get
+    }
+    public var description: Swift.String {
+      get
+    }
+    public var debugDescription: Swift.String {
+      get
+    }
+  }
+}
+public enum PNKRequestContentType : Swift.String {
+  case none
+  case json
+  case xwwwForm
+  case textPlain
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+  public init?(rawValue: Swift.String)
+}
+public enum PNKRequestMethod : Swift.String {
+  case get
+  case put
+  case post
+  case delete
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+  public init?(rawValue: Swift.String)
+}
+public enum NetworkType : Swift.Int, Swift.Codable {
+  case any
+  case cellular
+  case wifi
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+  public init?(rawValue: Swift.Int)
+}
+@_hasMissingDesignatedInitializers public class PNKReachability {
+  public typealias PNNetworkReachable = (PaiNetwork.PNKReachability) -> Swift.Void
+  public typealias PNNetworkUnreachable = (PaiNetwork.PNKReachability) -> Swift.Void
+  public var whenReachable: PaiNetwork.PNKReachability.PNNetworkReachable?
+  public var whenUnreachable: PaiNetwork.PNKReachability.PNNetworkUnreachable?
+  convenience public init?(hostname: Swift.String, queueQoS: Dispatch.DispatchQoS = .default, targetQueue: Dispatch.DispatchQueue? = nil)
+  convenience public init?(queueQoS: Dispatch.DispatchQoS = .default, targetQueue: Dispatch.DispatchQueue? = nil)
+  @objc deinit
+}
+extension PNKReachability {
+  public func startNotifier() throws
+}
+public protocol JobResult {
+  func done(_ result: PaiNetwork.JobCompletion)
+}
+public enum JobCompletion {
+  case success
+  case fail(Swift.Error)
+}
+public protocol Job {
+  func onRun(callback: PaiNetwork.JobResult)
+  func onRetry(error: Swift.Error) -> PaiNetwork.RetryConstraint
+  func onRemove(result: PaiNetwork.JobCompletion)
+}
+open class PNKResponse<SuccessObjectType> : Swift.CustomStringConvertible, Swift.CustomDebugStringConvertible {
+  final public let request: Foundation.URLRequest?
+  final public let response: Foundation.HTTPURLResponse?
+  final public let responseTime: Foundation.TimeInterval
+  final public let result: Swift.Result<SuccessObjectType, Swift.Error>
+  public var value: SuccessObjectType? {
+    get
+  }
+  public var error: Swift.Error? {
+    get
+  }
+  open var isSuccessful: Swift.Bool {
+    get
+  }
+  public init(request: Foundation.URLRequest? = nil, response: Foundation.HTTPURLResponse? = nil, responseTime: Foundation.TimeInterval = 0.0, result: Swift.Result<SuccessObjectType, Swift.Error>)
+  open var description: Swift.String {
+    get
+  }
+  open var debugDescription: Swift.String {
+    get
+  }
+  @objc deinit
+}
+extension PaiNetwork.PNKError.SessionTaskError : Swift.Equatable {}
+extension PaiNetwork.PNKError.SessionTaskError : Swift.Hashable {}
+extension PaiNetwork.PNKError.DownloadingError : Swift.Equatable {}
+extension PaiNetwork.PNKError.DownloadingError : Swift.Hashable {}
+extension PaiNetwork.PNKRequestContentType : Swift.Equatable {}
+extension PaiNetwork.PNKRequestContentType : Swift.Hashable {}
+extension PaiNetwork.PNKRequestContentType : Swift.RawRepresentable {}
+extension PaiNetwork.PNKRequestMethod : Swift.Equatable {}
+extension PaiNetwork.PNKRequestMethod : Swift.Hashable {}
+extension PaiNetwork.PNKRequestMethod : Swift.RawRepresentable {}
+extension PaiNetwork.NetworkType : Swift.Equatable {}
+extension PaiNetwork.NetworkType : Swift.Hashable {}
+extension PaiNetwork.NetworkType : Swift.RawRepresentable {}
