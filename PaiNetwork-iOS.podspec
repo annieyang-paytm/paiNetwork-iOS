@@ -24,6 +24,5 @@ Pod::Spec.new do |s|
     s.platform = :ios
     s.swift_version = "5.0"
     s.ios.deployment_target = '10.0'
-    
-    s.source_files = 'NetworkSDK/**/*.swift'
+
 end
