@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
     s.name             = 'PaiNetwork-iOS'
     s.module_name      = 'PaiNetwork'
-    s.version          = '0.6.0'
+    s.version          = '1.0.0'
     s.summary          = 'PAI network SDK'
     s.swift_version    = '5.0'
     s.description      = <<-DESC

@@ -1,5 +1,5 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.4.2 (swiftlang-1205.0.28.2 clang-1205.0.19.57)
+// swift-compiler-version: Apple Swift version 5.3 (swiftlang-1200.0.29.2 clang-1200.0.30.1)
 // swift-module-flags: -target arm64-apple-ios10.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name PaiNetwork
 import CommonCrypto
 import Compression
@@ -20,8 +20,8 @@ open class PNKCrashlyticsTrackingError : PaiNetwork.PNKJobError {
   override public var description: Swift.String {
     get
   }
-  override public init(code: Swift.Int, isRetry: Swift.Bool = super, message: Swift.String)
   @objc deinit
+  override public init(code: Swift.Int, isRetry: Swift.Bool = super, message: Swift.String)
 }
 public protocol PNKJobDelegate : AnyObject {
   func sendErrorToCrashlytics(_ error: PaiNetwork.PNKCrashlyticsTrackingError)
@@ -39,8 +39,8 @@ open class PNKBaseJob : PaiNetwork.Job {
 }
 @_inheritsConvenienceInitializers final public class PNKEmptyJob : PaiNetwork.PNKBaseJob {
   override final public func onRun(callback: PaiNetwork.JobResult)
-  override public init(endPoint: Swift.String? = super)
   @objc deinit
+  override public init(endPoint: Swift.String? = super)
 }
 public enum PNKError : Swift.Error {
   public enum NetworkError : Swift.Error {
@@ -52,10 +52,10 @@ public enum PNKError : Swift.Error {
   public enum SessionTaskError : Swift.Error {
     case sessionInvalidated
     public static func == (a: PaiNetwork.PNKError.SessionTaskError, b: PaiNetwork.PNKError.SessionTaskError) -> Swift.Bool
-    public func hash(into hasher: inout Swift.Hasher)
     public var hashValue: Swift.Int {
       get
     }
+    public func hash(into hasher: inout Swift.Hasher)
   }
   public enum EncodingError : Swift.Error {
     case encodeHTTPBodyFailed(error: Swift.Error)
@@ -63,11 +63,21 @@ public enum PNKError : Swift.Error {
   public enum DownloadingError : Swift.Error {
     case moveFileFailed
     public static func == (a: PaiNetwork.PNKError.DownloadingError, b: PaiNetwork.PNKError.DownloadingError) -> Swift.Bool
-    public func hash(into hasher: inout Swift.Hasher)
     public var hashValue: Swift.Int {
       get
     }
+    public func hash(into hasher: inout Swift.Hasher)
   }
+}
+@_hasMissingDesignatedInitializers public class PNKNetworkHelper {
+  public static func getHTTPURLResponse(_ response: Foundation.URLResponse?) -> Foundation.HTTPURLResponse?
+  public static func isSuccessResponse(_ response: Foundation.URLResponse?) -> Swift.Bool
+  public static func isSuccessResponseCode(_ code: Swift.Int) -> Swift.Bool
+  public static func isBadRequest(_ response: Foundation.URLResponse?) -> Swift.Bool
+  public static func isBadRequestCode(_ code: Swift.Int) -> Swift.Bool
+  public static func isServerError(_ response: Foundation.URLResponse?) -> Swift.Bool
+  public static func isServerErrorCode(_ code: Swift.Int) -> Swift.Bool
+  @objc deinit
 }
 open class PNKJobCreator {
   public init()
@@ -75,8 +85,8 @@ open class PNKJobCreator {
   @objc deinit
 }
 @_hasMissingDesignatedInitializers final public class PNKDownloadRequest : PaiNetwork.PNKRequest {
-  override public init(url: Swift.String, requestContent: PaiNetwork.PNKRequest.RequestContent = super, requestMethod: PaiNetwork.PNKRequestMethod = super, httpHeaders: [Swift.String : Swift.String] = super, isCookieRequired: Swift.Bool = super, includeURLRequestInResponse: Swift.Bool = super, requestModifier: PaiNetwork.PNKRequest.RequestModifier? = super)
   @objc deinit
+  override public init(url: Swift.String, requestContent: PaiNetwork.PNKRequest.RequestContent = super, requestMethod: PaiNetwork.PNKRequestMethod = super, httpHeaders: [Swift.String : Swift.String] = super, isCookieRequired: Swift.Bool = super, includeURLRequestInResponse: Swift.Bool = super, requestModifier: PaiNetwork.PNKRequest.RequestModifier? = super)
 }
 @_hasMissingDesignatedInitializers final public class PNKJobManager {
   public static let shared: PaiNetwork.PNKJobManager
@@ -163,32 +173,32 @@ public enum PNKRequestContentType : Swift.String {
   case json
   case xwwwForm
   case textPlain
-  public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {
     get
   }
+  public init?(rawValue: Swift.String)
 }
 public enum PNKRequestMethod : Swift.String {
   case get
   case put
   case post
   case delete
-  public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {
     get
   }
+  public init?(rawValue: Swift.String)
 }
 public enum NetworkType : Swift.Int, Swift.Codable {
   case any
   case cellular
   case wifi
-  public init?(rawValue: Swift.Int)
   public typealias RawValue = Swift.Int
   public var rawValue: Swift.Int {
     get
   }
+  public init?(rawValue: Swift.Int)
 }
 @_hasMissingDesignatedInitializers public class PNKReachability {
   public typealias PNNetworkReachable = (PaiNetwork.PNKReachability) -> Swift.Void
